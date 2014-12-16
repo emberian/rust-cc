@@ -1,0 +1,12 @@
+[package]
+
+name = "cc"
+version = "0.0.1"
+authors = ["Corey Richardson <corey@octayn.net>"]
+description = "A cycle collector for Rust"
+license = "BSL-1.0"
+homepage = "https://github.com/cmr/rust-cc"
+repository = "https://github.com/cmr/rust-cc.git"
+documentation = "http://rust-ci.org/cmr/rust-cc/doc/cc"
+readme = "README.md"
+keywords = ["cycle", "garbage", "collection", "gc"]
