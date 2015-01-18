@@ -23,7 +23,7 @@ pub trait CyclicReference {
     /// It is intended that smart pointers will return their address here. If there is no useful id
     /// to return for a given implementation of CyclicReference, return None. Odds are, some
     /// wrapper type higher up has you covered (eg, `Rc<RefCell<R>>`)
-    fn get_id(&self) -> Option<uint>;
+    fn get_id(&self) -> Option<usize>;
 }
 
 impl<R: CyclicReference> CyclicReference for Rc<RefCell<R>> {
@@ -35,37 +35,37 @@ impl<R: CyclicReference> CyclicReference for Rc<RefCell<R>> {
         self.try_borrow().as_ref().and_then(|r| r.get_references())
     }
 
-    fn get_id(&self) -> Option<uint> { Some(&*self as *const _ as uint) }
+    fn get_id(&self) -> Option<usize> { Some(&*self as *const _ as usize) }
 }
 
 impl<'a, R: CyclicReference> CyclicReference for RefMut<'a, R> {
     fn break_references(&mut self) -> bool { (**self).break_references() }
     fn get_references(&self) -> RefList { (**self).get_references() }
-    fn get_id(&self) -> Option<uint> { (**self).get_id() }
+    fn get_id(&self) -> Option<usize> { (**self).get_id() }
 }
 
 impl<'a, R: CyclicReference> CyclicReference for &'a mut R {
     fn break_references(&mut self) -> bool { (**self).break_references() }
     fn get_references(&self) -> RefList { (**self).get_references() }
-    fn get_id(&self) -> Option<uint> { (**self).get_id() }
+    fn get_id(&self) -> Option<usize> { (**self).get_id() }
 }
 
 impl<'a, R: CyclicReference> CyclicReference for Ref<'a, R> {
     fn break_references(&mut self) -> bool { false }
     fn get_references(&self) -> RefList { (**self).get_references() }
-    fn get_id(&self) -> Option<uint> { (**self).get_id() }
+    fn get_id(&self) -> Option<usize> { (**self).get_id() }
 }
 
 impl<'a, R: CyclicReference> CyclicReference for &'a R {
     fn break_references(&mut self) -> bool { false }
     fn get_references(&self) -> RefList { (**self).get_references() }
-    fn get_id(&self) -> Option<uint> { (**self).get_id() }
+    fn get_id(&self) -> Option<usize> { (**self).get_id() }
 }
 
 impl<R: CyclicReference> CyclicReference for Option<R> {
     fn break_references(&mut self) -> bool { *self = None; true }
     fn get_references(&self) -> RefList { self.as_ref().and_then(|r| r.get_references()) }
-    fn get_id(&self) -> Option<uint> { self.as_ref().and_then(|r| r.get_id()) }
+    fn get_id(&self) -> Option<usize> { self.as_ref().and_then(|r| r.get_id()) }
 }
 
 /// Run a cycle collection, starting at `reference`, returning the number of objects collected, or
